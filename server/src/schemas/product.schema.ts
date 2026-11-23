@@ -23,3 +23,44 @@ export const listProductsQuerySchema = z
     );
 
 export type ListProductsQuery = z.infer<typeof listProductsQuerySchema>;
+
+const specsSchema = z.record(z.string() , z.union([z.string() , z.number() , z.boolean()]));
+
+export const createProductSchema = z.strictObject({
+    name: z.string().trim().min(1).max(200),
+    description: z.string().trim().min(1),
+    brand: z.string().trim().min(1).max(100),
+    subcategory: z.string().trim().min(1).nullable().optional(),
+    price: z.number().min(0).max(99999999),
+    currency: z.string().trim().length(3).transform((s) => s.toUpperCase()).default("USD"),
+    stock: z.number().int().min(0).default(0),
+    image: z.url(),
+    images: z.array(z.url()).max(10).default([]),
+    brandImg: z.url().nullable().optional(),
+    specs: specsSchema.default({}),
+    categoryId: z.number().int().positive(),
+    isActive: z.boolean().default(true)
+});
+
+
+export const updateProductSchema = z    
+    .strictObject({
+        name: z.string().trim().min(1).max(200),
+        description: z.string().trim().min(1),
+        brand: z.string().trim().min(1).max(100),
+        subcategory: z.string().trim().min(1).nullable(),
+        price: z.number().min(0).max(99999999),
+        currency: z.string().trim().length(3).transform((s) => s.toUpperCase()),
+        stock: z.number().int().min(0),
+        image: z.url(),
+        images: z.array(z.url().max(10)),
+        brandImg: z.url().nullable(),
+        specs: specsSchema,
+        categoryId: z.number().int().positive(),
+        isActive: z.boolean(),
+    })
+    .partial()
+    .refine((o) => Object.keys(o).length > 0 , { message: "At least one field is required" });
+
+export type CreateProductInput = z.infer<typeof createProductSchema>;
+export type UpdateProductInput = z.infer<typeof updateProductSchema>;

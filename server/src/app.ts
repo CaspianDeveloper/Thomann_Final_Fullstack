@@ -4,6 +4,8 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import { authRoutes } from "./routes/auth.routes.js";
 import { categoryRoutes } from "./routes/category.routes.js";
 import { productRoutes } from "./routes/product.routes.js";
+import { adminRoutes } from "./routes/admin.routes.js";
+
 
 export const app = express();
 
@@ -19,5 +21,7 @@ app.use("/auth" , authRoutes);
 app.use("/categories" , categoryRoutes);
 
 app.use("/products" , productRoutes);
+
+app.use("/admin" , adminRoutes);
 
 app.use(errorHandler);
