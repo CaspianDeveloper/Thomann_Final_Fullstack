@@ -21,5 +21,14 @@ export const listOrdersQuerySchema = z.object({
     sort: z.enum(["newest" , "oldest" , "total_asc", "total_desc"]).default("newest"),
 });
 
+export const adminListOrdersQuerySchema = listOrdersQuerySchema.extend({
+    userId: z.coerce.number().int().positive().optional(),
+});
+
+export const updateOrderStatusSchema = z.strictObject({
+    status: orderStatusEnum,
+});
+
+export type AdminListOrdersQuery = z.infer<typeof adminListOrdersQuerySchema>;
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
 export type ListOrdersQuery = z.infer<typeof listOrdersQuerySchema>;

@@ -1,5 +1,10 @@
 import type { Request, Response } from "express";
-import { createOrderSchema , listOrdersQuerySchema } from "../schemas/order.schema";
+import { 
+    createOrderSchema ,
+    listOrdersQuerySchema,
+    adminListOrdersQuerySchema,
+    updateOrderStatusSchema, 
+} from "../schemas/order.schema";
 import { idParamSchema } from "../schemas/product.schema";
 import * as orderService from "../services/order.service";
 
@@ -23,4 +28,20 @@ export async function getOne(req: Request, res: Response) {
 export async function cancel(req: Request, res: Response) {
     const { id } = idParamSchema.parse(req.params);
     res.json(await orderService.cancelOrder(req.user!.sub, id));
+};
+
+export async function adminList(req: Request, res: Response) {
+    const q = adminListOrdersQuerySchema.parse(req.query);
+    res.json(await orderService.adminListOrders(q));
+};
+
+export async function adminGetOne(req: Request, res: Response) {
+    const { id } = idParamSchema.parse(req.params);
+    res.json(await orderService.adminGetOrder(id));
+};
+
+export async function adminUpdateStatus(req: Request, res: Response) { 
+    const { id } = idParamSchema.parse(req.params);
+    const { status } = updateOrderStatusSchema.parse(req.body);
+    res.json(await orderService.adminUpdateStatus(id, status));
 };

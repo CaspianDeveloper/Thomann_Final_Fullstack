@@ -1,6 +1,27 @@
 import { prisma } from "../lib/prisma";
 import { BadRequestError , ConflictError , NotFoundError } from "../lib/errors";
 import type { CreateOrderInput , ListOrdersQuery } from "../schemas/order.schema";
+import type { AdminListOrdersQuery } from "../schemas/order.schema";
+import { email } from "zod";
+
+type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+const ALLOWED_TRANSITIONS: Record<string, readonly string[]> = {
+    PENDING: ["PAID", "CANCELED"],
+    PAID: ["SHIPPED" , "CANCELED"],
+    SHIPPED: ["DELIVERED"],
+    DELIVERED: [],
+    CANCELLED: [],
+};
+
+async function restoreStock(tx: Tx, items: { productId: number; quantity: number }[]) {
+    for (const item of items) {
+        await tx.product.update({
+            where: { id: item.productId },
+            data: { stock: { increment: item.quantity } },
+        });
+    };
+};
 
 const round2 = (n:number) => Math.round(n * 100) / 100;
 
@@ -140,14 +161,86 @@ export async function cancelOrder(userId: number, id: number) {
         if (count === 0) throw new ConflictError("Only PENDING orders can be canceled");
 
         // Stock yalnız count === 1 olanda , bir dəfə qaytarılır.
-        for (const item of order.items) {
-            await tx.product.update({
-                where: { id: item.productId },
-                data: { stock: { increment: item.quantity } },
-            });
-        }
+        await restoreStock(tx, order.items);
     });
 
     return getOrder(userId, id);
 };
+
+const adminInclude = {
+    items: { orderBy: { id: "asc" as const  } },
+    user: { select: { id: true, email: true, firstName: true, lastName: true } },
+};
+
+function toAdminOrderDto(order: any) {
+    return { ...toOrderDto(order), user: order.user };
+};
+
+export async function adminListOrders(q: AdminListOrdersQuery) {
+    const where = {
+        ...(q.status ? { status: q.status } : {}),
+        ...(q.userId ? { userId: q.userId } : {}),
+    };
+
+    const orderBy = 
+     q.sort === "oldest" ? { createdAt: "asc" as const }
+     : q.sort === "total_asc" ? { total: "asc" as const }
+     : q.sort === "total_desc" ? { total: "desc" as const }
+     : { createdAt: "desc" as const };
+
+    const [total ,rows] = await Promise.all([
+        prisma.order.count({ where }),
+        prisma.order.findMany({
+            where,
+            orderBy,
+            skip: (q.page - 1) * q.limit,
+            take: q.limit,
+            include: adminInclude,
+        }),
+    ]);
+
+    return {
+        items: rows.map(toAdminOrderDto),
+        page: q.page,
+        limit: q.limit,
+        total,
+        totalPages: Math.ceil(total / q.limit),
+    };
+};
+
+
+export async function adminGetOrder(id: number) {
+    const order = await prisma.order.findUnique({ where: { id }, include: adminInclude });
+
+    if (!order) throw new NotFoundError("Order not found");
+    return toAdminOrderDto(order);
+};
+
+export async function adminUpdateStatus(id: number, next: string) {
+    await prisma.$transaction(async (tx) => {
+        const order = await tx.order.findUnique({
+            where: { id },
+            include: { items: { orderBy: { productId: "asc" } } },
+        });
+        if (!order) throw new NotFoundError("Order not found");
+
+        if (!ALLOWED_TRANSITIONS[order.status]?.includes(next)) {
+            throw new ConflictError(`Cannot change status from ${order.status} to ${next}`);
+        };
+
+        // Şərtli yeniləmə: başqası arada statusu dəyişibsə, 0 sətir yenilənir.
+        const { count } = await tx.order.updateMany({
+            where: { id, status: order.status },
+            data: { status: next as typeof order.status},
+        });
+
+        if (count === 0) throw new ConflictError("Order status was changed concurrently");
+
+        if (next === "CANCELED") await restoreStock(tx, order.items);
+    });
+
+    return adminGetOrder(id);
+};
+
+
 
