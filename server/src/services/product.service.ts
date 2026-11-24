@@ -62,7 +62,7 @@ export async function listProducts(q: ListProductsQuery, opts: { admin?: boolean
         page: q.page,
         limit: q.limit,
         total,
-        totalPage: Math.ceil(total / q.limit)
+        totalPages: Math.ceil(total / q.limit)
     };
 };
 
