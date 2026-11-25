@@ -56,18 +56,21 @@ export async function createAdmin(email = "admin@test.com") {
 };
 
 
-export async function makeProduct(opts: { stock?: number; price?: number; isActive?: boolean; name?: string } = {}) {
+export async function makeProduct(opts: { stock?: number; price?: number; isActive?: boolean; name?: string; brand?: string; categorySlug?: string;} = {}) {
+    
+    const slug  = opts.categorySlug ?? "test-cat";
     const category = await prisma.category.upsert({
-        where: { slug: "test-cat" },
+        where: { slug },
         update: {},
-        create: { name: "Test Cat" , slug: "test-cat" },
+        create: { name: slug, slug },
     });
+    
 
     return prisma.product.create({
         data: { 
             name: opts.name ??  "Test Product",
             description: "desc",
-            brand: "Brand",
+            brand: opts.brand ??  "Brand",
             price: opts.price ?? 100,
             stock: opts.stock ?? 10,
             image: "https://example.com/a.jpg",
