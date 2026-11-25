@@ -56,7 +56,7 @@ export async function createAdmin(email = "admin@test.com") {
 };
 
 
-export async function makeProduct(opts: { stock?: number; price?: number; isActive?: boolean } = {}) {
+export async function makeProduct(opts: { stock?: number; price?: number; isActive?: boolean; name?: string } = {}) {
     const category = await prisma.category.upsert({
         where: { slug: "test-cat" },
         update: {},
@@ -65,7 +65,7 @@ export async function makeProduct(opts: { stock?: number; price?: number; isActi
 
     return prisma.product.create({
         data: { 
-            name: "Test Product",
+            name: opts.name ??  "Test Product",
             description: "desc",
             brand: "Brand",
             price: opts.price ?? 100,
