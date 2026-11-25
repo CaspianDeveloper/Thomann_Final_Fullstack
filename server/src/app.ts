@@ -8,6 +8,8 @@ import { adminRoutes } from "./routes/admin.routes.js";
 import { cartRoutes } from "./routes/cart.routes.js";
 import { wishlistRoutes } from "./routes/wishlist.routes.js";
 import { orderRoutes } from "./routes/order.routes.js";
+import swaggerUi from "swagger-ui-express";
+import { openapi } from "./docs/openapi.js";
 
 
 export const app = express();
@@ -16,9 +18,14 @@ app.use(cors( { origin: process.env.CLIENT_URL ?? "http://localhost:5173" } ));
 
 app.use(express.json({ limit:"100kb" }));
 
-app.get("/health" , (_req , res) => {
+app.get("/health" , (_req , res) => { 
     res.json({ status: "Ok" });
 });
+
+app.get("/openapi.json", (_req, res) => {
+    res.json(openapi);
+});
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapi));
 
 app.use("/orders" , orderRoutes);
 
