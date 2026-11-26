@@ -106,7 +106,7 @@ export const openapi: Json = {
             "Authenticate with POST /auth/login, then click Authorize and paste the token. " + 
             "All errors share one format: { error: { code, message, details? } }.",
     },
-    servers: [{ url: "http://localhost:3000" , description: "Local" }],
+    servers: [{ url: "/" , description: "Current server" }],
     tags: [
         { name: "System" },
         { name: "Auth" },
