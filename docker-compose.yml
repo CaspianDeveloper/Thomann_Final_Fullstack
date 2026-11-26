@@ -9,6 +9,24 @@ services:
       - "127.0.0.1:5433:5432"
     volumes: 
       - pgdata:/var/lib/postgresql/data
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d thomann"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  api: 
+    build: ./server
+    ports: 
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/thomann?schema=public
+      JWT_SECRET: dev-secret-change-me-dev-secret-change-me
+      CLIENT_URL: http://localhost:5173
+      PORT: "3000"
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: change-this-admin-password
+    depends_on:
+      db: 
+       condition: service_healthy
 volumes: 
     pgdata:
