@@ -1,3 +1,5 @@
+import helmet from "helmet";
+import { authLimiter } from "./middleware/rateLimit.js";
 import express from "express";
 import cors from "cors";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -12,8 +14,11 @@ import swaggerUi from "swagger-ui-express";
 import { openapi } from "./docs/openapi.js";
 
 
+
 export const app = express();
 
+app.set("trust proxy" , 1); // Render proxy arxasındadı , əks halda hamıda eyni IP görünər.
+app.use(helmet({ contentSecurityPolicy: false })); // CSP Swagger UI-ni bloklayır.
 app.use(cors( { origin: process.env.CLIENT_URL ?? "http://localhost:5173" } ));
 
 app.use(express.json({ limit:"100kb" }));
@@ -29,7 +34,13 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapi));
 
 app.use("/orders" , orderRoutes);
 
+app.use("/auth/login" , authLimiter);
+
+app.use("/auth/register" , authLimiter);
+
 app.use("/auth" , authRoutes);
+
+
 
 app.use("/categories" , categoryRoutes);
 

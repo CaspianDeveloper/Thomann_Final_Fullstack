@@ -2,7 +2,7 @@
 
 An online musical-instruments shop. React frontend + REST API (Express 5, TypeScript, PostgreSQL, Prisma 7).
 
--**Live API:** _TODO (Render)_ , docs at `/docs`
+-**Live API:** https://thomann-final-fullstack.onrender.com, docs at [`/docs`](https://thomann-final-fullstack.onrender.com/docs)
 -**Live frontend:** https://thomann-final-project-frontend.vercel.app/Thomann
 
 ## Features
