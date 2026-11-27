@@ -11,7 +11,7 @@ const ALLOWED_TRANSITIONS: Record<string, readonly string[]> = {
     PAID: ["SHIPPED" , "CANCELED"],
     SHIPPED: ["DELIVERED"],
     DELIVERED: [],
-    CANCELLED: [],
+    CANCELED: [],
 };
 
 async function restoreStock(tx: Tx, items: { productId: number; quantity: number }[]) {
@@ -81,7 +81,7 @@ export async function createOrder(userId: number, input: CreateOrderInput) {
         }
 
         const shippingAddress = 
-            input.shippingAdress ?? 
+            input.shippingAddress ?? 
             (await tx.user.findUniqueOrThrow({
                 where: { id: userId },
                 select: { streetNum: true, postalCode: true, town: true, country: true },

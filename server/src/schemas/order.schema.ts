@@ -11,7 +11,7 @@ export const shippingAddressSchema = z.strictObject({
 
 // shippingAddress verilməsə, istifadəçinin profil ünvanı götürülür.
 export const createOrderSchema = z.strictObject({
-    shippingAdress: shippingAddressSchema.optional(),
+    shippingAddress: shippingAddressSchema.optional(),
 });
 
 export const listOrdersQuerySchema = z.object({
