@@ -34,13 +34,12 @@ function Login() {
 
 
     userSignIn(user)
-    .then(item => {
-      console.log(item);
-      toast.success(" Congrulations !  successfully login !");
-      login(item)
-      navigate("/");
+    .then(data => {
+        toast.success(" Congrulations ! successfully login ! ");
+        login(data);
+        navigate("/Thomann");
     })
-    .catch(() => toast.error("Email or password is invalid ! "));
+    .catch((err) => toast.error(err.message));
   };
   
 

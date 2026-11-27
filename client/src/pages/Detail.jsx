@@ -15,7 +15,7 @@ import Loader from "../components/Loader";
 function Detail() {
 
     const {products} = useThomman();
-    const { brand } = useParams();
+    const { id: routeId } = useParams();
     const [counter , setCounter] = useState(1);
     const [thumb , setThumb] = useState(false);
 
@@ -31,10 +31,10 @@ function Detail() {
 
     const formatCharactericsKey = (key) => {
         return key 
-        .replace(/([A-Z])/g , ' $1') // Data da olan characterics obyektinin camelCase ilə yazılmış key lərinin hamısını normal yazıya çevrilməsi RegExp ilə.
-        .replace(/^./, str => str.toUpperCase()) // Sətr başlayır ^ daha sonra . istənilən simvol 1 ədəd onu böyük hərfə çevirir. 
-        .replace(/In([A-Z])/g , ' (in $1)') // regexp / başlayır In sözünü tapır və A-Z yə gələn böyük hərfi qruplaşdırıb yadda saxlayır g hamısını seçir (in $1) = In + böyük hərf + boşluq.
-        .replace(/\b([A-Z]{2,})\b/g , word => word.toUpperCase()); // \b söz sərhədi başladı di ([A-Z]) {2 ,} 2 və daha çox böyük hərf götür \b söz sərhədi bitdi word.toUpperCase() = bütün sözü böyük hərfə çevir.
+        .replace(/([A-Z])/g , ' $1')  // Data da olan characterics obyektinin camelCase ilə yazılmış key lərinin hamısını normal yazıya çevrilməsi RegExp ilə.
+        .replace(/^./, str => str.toUpperCase())  // Sətr başlayır ^ daha sonra . istənilən simvol 1 ədəd onu böyük hərfə çevirir. 
+        .replace(/In([A-Z])/g , ' (in $1)')  // regexp / başlayır In sözünü tapır və A-Z yə gələn böyük hərfi qruplaşdırıb yadda saxlayır g hamısını seçir (in $1) = In + böyük hərf + boşluq.
+        .replace(/\b([A-Z]{2,})\b/g , word => word.toUpperCase());  // \b söz sərhədi başladı di ([A-Z]) {2 ,} 2 və daha çox böyük hərf götür \b söz sərhədi bitdi word.toUpperCase() = bütün sözü böyük hərfə çevir.
     };
 
     const formatCharacteristicsValue = (value) => {
@@ -53,9 +53,10 @@ function Detail() {
     if (!products || !products) {
         return <Loader />
     };
+
+  
     
-    
-    const dataObj = products.find(item => item.brand === brand);
+    const dataObj = products.find(item => item.id === Number(routeId));
 
     if (!dataObj) {
         return <Error />

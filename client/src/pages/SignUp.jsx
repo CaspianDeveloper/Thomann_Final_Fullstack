@@ -22,11 +22,11 @@ function SignUp() {
     firstName: "",
     lastName: "",
     streetNum: "",
-    postalCode: null,
+    postalCode: "",
     email: "",
     password: "",
     town: "",
-    country: null
+    country: ""
   });
   
 
@@ -38,32 +38,25 @@ function SignUp() {
 
   function handleSignUp() {
 
-    if (!user.company || !user.firstName || !user.lastName || !user.streetNum || !user.postalCode || !user.town || !user.country || !user.email ) {
-      return toast.error(" Please fill all input fields !")
+    if (!user.firstName || !user.lastName || !user.streetNum || !user.postalCode || !user.town || !user.country || !user.email) {
+      return toast.error(" Please fill all input fields !");
     };
 
     if (user.password.length < 8) {
-      return toast.error(" Password must be longer than 8 characters. ")
+      return toast.error(" Password must be at least 8 characters. ");
     };
 
-    if (user.password.length != pass2.length) {
-      return toast.error("The passwords do not match.")
+    if (user.password  != pass2) {
+      return toast.error("The passwords do not match.");
     };
 
-    const enhUser = {
-      ...user,
-      role: "user",
-      isActive: new Date().toISOString(),
-      lastActive: null
-    }
 
-    userSignUp(enhUser)
-    .then(item => {
-      console.log(item);
-      toast.success(" Congrulations ! New user successfully registered !");
-      navigate("/register/sign-in")
-    })
-    .catch(err => console.error(err));
+    userSignUp(user)
+      .then(() => {
+        toast.success(" Congrulations ! New user successfully registered !");
+        navigate("/register/sign-in");
+      })
+      .catch(err => toast.error(err.message));
   };
   
   
@@ -104,7 +97,7 @@ function SignUp() {
                 <select onChange={handleValues} className="rounded bg-white p-2  border-gray-400 outline-0 ring-0 dark:bg-gray-700 dark:text-[#01B4BC] dark:placeholder:text-[#01B4BC] dark:border-[#01B4BC]" type="text" name="country">
                     {
                       countries?.map((item , i) => 
-                        <option  key={i}>{item?.name}</option>
+                        <option  key={i}>Select country</option>
                     )
                     }
                 </select>

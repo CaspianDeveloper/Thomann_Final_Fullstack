@@ -80,7 +80,7 @@ function ProductsCard({item}) {
                </div>
             </div>
             <div>
-                <Link to={`/details/${brand}`}>
+                <Link to={`/details/${id}`}>
                   <h5 className="mb-2 text-[1.8rem] lg:text-[1.2rem] font-semibold tracking-tight dark:text-[#01b4bc] text-gray-900 py-3 px-3 hover:underline">{name}</h5>
                 </Link>
                 <p className="mb-3 font-normal px-3 text-gray-700 dark:text-[#01b4bc] xl:text-[1.2rem] lg:text-[1.2rem] whitespace-nowrap text-ellipsis mask-ellipse overflow-clip text-2xl"><span className="font-semibold">Category :</span> {category}</p>

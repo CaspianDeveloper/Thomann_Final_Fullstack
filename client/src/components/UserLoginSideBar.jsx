@@ -34,12 +34,11 @@ function UserLoginSideBar({ userStatus, setUserStatusSideBar}) {
 
             userSignIn(user)
             .then(item => {
-            console.log(item);
             toast.success(" Congrulations !  successfully login !");
             login(item);
-            navigate("/Thomann")
+            navigate("/Thomann");
             })
-            .catch(err => console.error(err));
+            .catch(err => toast.error(err.message));
         };
 
 
@@ -56,7 +55,7 @@ function UserLoginSideBar({ userStatus, setUserStatusSideBar}) {
                 <div className="p-5">
                   <div>
                       <div className="flex items-center justify-between">
-                        <p className="font-semibold text-xl">Email : {userJson[0]?.email}</p>
+                        <p className="font-semibold text-xl">Email : {userJson?.email}</p>
                         <HiMiniXMark className="cursor-pointer p-[5px_10px] mt-2  hover:text-[#7E00F3] text-[4rem] lg:text-[3rem] xl:text-[3rem]"  onClick={() => setUserStatusSideBar(false)} />
                       </div>
                       <div className="p-[40px_10px]">

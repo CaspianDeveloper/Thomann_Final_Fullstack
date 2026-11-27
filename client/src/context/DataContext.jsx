@@ -1,6 +1,7 @@
 import { createContext, useContext } from "react";
 import { useEffect, useState } from "react";
-import { getAllProducts, getCountriesThomman } from "../services/ThommanServices";
+import { getCountriesThomman } from "../services/ThommanServices";
+import { getAllProducts } from "../services/ProductServices";
 
 const ThommanData = createContext();
 
@@ -39,7 +40,7 @@ function DataContext({ children }) {
     </>
   )
 };
-
+/* eslint-disable react-refresh/only-export-components */
 export function useThomman() {
   return useContext(ThommanData)
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -5,25 +6,44 @@ export const authContext = createContext();
 
 export const useAuth = () => useContext(authContext);
 
+// Köhnə formatın (massiv) və tokensin qalıqların təmizlənməsi.
+function readStoredUser() {
+    try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const token = localStorage.getItem("token");
+        if (!user || !token || Array.isArray(user)) {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            return null;
+        }
+    } catch {
+        return null
+    };
+};
+
 function AuthContext({ children }) {
 
-    const [userJson , setUser] = useState(JSON.parse(localStorage.getItem("user") || null));
-    const navigate = useNavigate(null);
+    const [userJson , setUser] = useState(readStoredUser);
+    const navigate = useNavigate();
 
-    function login(userData){
-        localStorage.setItem("user" , JSON.stringify(userData));
-        setUser(userData)
+    function login({ user, token }){
+        localStorage.setItem("token" , token);
+        localStorage.setItem("user" , JSON.stringify(user));
+        setUser(user);
     };
 
     function logout() {
+        localStorage.removeItem("token");
         localStorage.removeItem("user");
+        setUser(null);
         navigate("/Thomann");
-        setUser(null)
     };
+
+    const isAdmin = userJson?.role === "ADMIN";
 
     return (
         <>
-            <authContext.Provider value={{ userJson , login ,logout }}>
+            <authContext.Provider value={{ userJson , isAdmin, login, logout}}>
                 {children}
             </authContext.Provider>
         </>

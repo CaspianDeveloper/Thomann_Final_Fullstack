@@ -9,7 +9,6 @@ function UserDashboard() {
   
 
   const {userJson , logout} = useAuth();
-  console.log(userJson);
 
 
   return (
@@ -21,27 +20,25 @@ function UserDashboard() {
                     <div className="flex flex-col gap-5 p-3">
                       <h2 className="capitalize">personal informations</h2>
                       <label className="uppercase">id</label>
-                      <input value={userJson[0]?.id} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.id} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                       <label className="capitalize">first name</label>
-                      <input value={userJson[0]?.firstName} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.firstName} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                       <label className="capitalize">postal code</label>
-                      <input value={userJson[0]?.postalCode} readOnly type="number" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.postalCode} readOnly type="number" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                     </div>
                     <div className="flex flex-col gap-5 pt-10">
                       <label className="capitalize">email</label>
-                      <input value={userJson[0]?.email} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.email} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                       <label className="capitalize">last name</label>
-                      <input value={userJson[0]?.lastName} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.lastName} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                       <label className="capitalize">country</label>
-                      <input value={userJson[0]?.country} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.country} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                     </div>
                     <div className="flex flex-col gap-5 pt-10">
-                      <label className="capitalize">password</label>
-                      <input value={userJson[0]?.password} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                       <label className="capitalize">street number</label>
-                      <input value={userJson[0]?.streetNum} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.streetNum} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                       <label className="capitalize">town</label>
-                      <input value={userJson[0]?.town} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
+                      <input value={userJson?.town} readOnly type="text" className="rounded dark:bg-gray-800 dark:border-[#01b4bc] border-gray-300 ring-0 focus:ring-0 outline-0" />
                     </div>
                 </div>
                 <div className="flex flex-col gap-3">

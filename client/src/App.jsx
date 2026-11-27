@@ -49,12 +49,12 @@ function App() {
               </Route>
 
                 <Route path="/details">
-                  <Route path=":brand" element={<Detail />} />
+                  <Route path=":id" element={<Detail />} />
                 </Route>
 
                 <Route path="/Basket">
                       <Route index element={<Basket />} />
-                      <Route path="details/:brand" element={<Detail  />} />
+                      <Route path="details/:id" element={<Detail  />} />
                 </Route>
 
                 <Route path="/WishList">
