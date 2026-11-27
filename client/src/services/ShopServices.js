@@ -10,6 +10,8 @@ async function call(promise, fallback) {
     };
 };
 
+export const cancelOrder = (id) => call(api.post(`/orders/${id}/cancel`) , "Could not cancel the order.");  
+
 export const getCart = () => call(api.get("/cart") , "Could not load the cart.");
 export const addCartItem = (productId, quantity = 1) => 
         call(api.post("/cart/items" , { productId, quantity }), "Could not add the cart.");

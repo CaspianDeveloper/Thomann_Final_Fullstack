@@ -1,4 +1,5 @@
 import { Link, Navigate, NavLink} from "react-router-dom"; 
+import MyOrders from "../components/Myorders";
 import { CiMail } from 'react-icons/ci';
 import { BsPersonLock } from "react-icons/bs";
 import { IoIosLogOut } from 'react-icons/io';
@@ -8,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 function UserDashboard() {
   
 
-  const {userJson , logout} = useAuth();
+  const {userJson , logout , isAdmin} = useAuth();
 
 
   return (
@@ -43,14 +44,15 @@ function UserDashboard() {
                 </div>
                 <div className="flex flex-col gap-3">
                       <Link to={"/Thomann"} className="capitalize cursor-pointer hover:underline">profile</Link>
-                      <Link to={"/Basket"} className="capitalize cursor-pointer hover:underline">my orders</Link>
+                      <Link to={"#orders"} className="capitalize cursor-pointer hover:underline">my orders</Link>
                       <Link to={"/WishList"} className="capitalize cursor-pointer hover:underline">my wishlist</Link>
-                    
+                      {isAdmin && <Link to={"/admin"} className="capitalize cursor-pointer hover:underline">admin panel</Link>}
                         <button onClick={logout} className="cursor-pointer flex items-center gap-2 capitalize">
                           log out
                           <IoIosLogOut size={20} />
                         </button>
                 </div>
+                <MyOrders />
             </div>
         </div>
     </>

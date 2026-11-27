@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AdminRoute from "./components/AdminRoute";
 import Main from "./components/Main";
 import Error from "./pages/Error";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -80,7 +81,7 @@ function App() {
                 </Route>
           </Route>
               
-              <Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
                       <Route index element={<Admin />} />
               </Route>
 
