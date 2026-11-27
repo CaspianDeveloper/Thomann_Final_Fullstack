@@ -1,3 +1,4 @@
+import { useShop } from "../context/ShopContext";
 import {   useEffect,  useState } from "react";
 import thomannLogo from "../assets/thomman_light_logo_.svg";
 import thomannDarkLogo from "../assets/thomman_dark_logo.png";
@@ -29,8 +30,7 @@ function Header({ status , setStatus, setSearchValue}) {
     const [flagStatus, setFLagStatusSideBar] = useState(false);
     const [userStatus, setUserStatusSideBar] = useState(false);
     const [catalogStatus, setCatalogSideBar] = useState(false);
-    const [basketCount , setBasketCount] = useState(0);
-    const [favCount , setFavCount] = useState(0);
+    const { cartCount: basketCount, wishCount: favCount } = useShop();
     const [theme , setTheme] = useState(true);
     
     
@@ -44,85 +44,6 @@ function Header({ status , setStatus, setSearchValue}) {
     const isSignInPage = location.pathname.startsWith("/register/sign-in");
     const isUserDashboardPage = location.pathname.startsWith("/userDashboard");
     
-    function updateBasketCount() {
-        try {
-            const basketLocal = localStorage.getItem("basketList")
-
-            if (basketLocal) {
-                const parsed = JSON.parse(localStorage.getItem("basketList")) || [];
-
-                if (Array.isArray(parsed)) {
-                    const totalCount = parsed.reduce((sum , item) => sum + (item.quantity || 1) , 0);
-                    setBasketCount(totalCount)
-                }else {
-                    setBasketCount(0);
-                }
-            }else {
-                setBasketCount(0);
-            }
-
-        } catch (error) {
-            console.error("error loading cart number" , error);
-        }
-    };
-
-    useEffect(() => {
-        updateBasketCount();
-
-        const handleBasketUpdate = () => {
-            updateBasketCount();
-        };
-
-        window.addEventListener("basketUpdated" , handleBasketUpdate);
-
-        window.addEventListener("storage" , handleBasketUpdate);
-
-        return () => {
-            window.removeEventListener("basketUpdated" , handleBasketUpdate);
-            window.removeEventListener("storage" , handleBasketUpdate);
-        }
-    }, []);
-    
-
-      function updateFavCount() {
-        try {
-            const favLocal = localStorage.getItem("favList")
-
-            if (favLocal) {
-                const parsedFav = JSON.parse(localStorage.getItem("favList")) || [];
-
-                if (Array.isArray(parsedFav)) {
-                    const totalCount = parsedFav.reduce((sum , item) => sum + (item.quantity || 1) , 0);
-                    setFavCount(totalCount)
-                }else {
-                    setFavCount(0);
-                }
-            }else {
-                setFavCount(0);
-            }
-
-        } catch (error) {
-            console.error("error loading cart number" , error);
-        }
-    };
-
-    useEffect(() => {
-        updateFavCount();
-
-        const handleFavUpdate = () => {
-            updateFavCount();
-        };
-
-        window.addEventListener("favListUpdated" , handleFavUpdate);
-
-        window.addEventListener("storageFav" , handleFavUpdate);
-
-        return () => {
-            window.removeEventListener("favListUpdated" , handleFavUpdate);
-            window.removeEventListener("storageFav" , handleFavUpdate);
-        }
-    }, []);
-
 
 
     useEffect(() => {   

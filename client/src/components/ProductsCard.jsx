@@ -1,67 +1,21 @@
-import { useState } from "react";
-import toast from "react-hot-toast";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
 import { RiShoppingBasketLine } from "react-icons/ri";
 import { Link } from "react-router";
+import { useShop } from "../context/ShopContext";
 
 function ProductsCard({item}) {
   
-  const [statusFav , setStatusFav] = useState(false);
-  
-  const {name, category, brand, image, price, currency_symbl, rating, availability , id} = item;
+  const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useShop();
 
-  const handleAddToBasket = () => {
+  const {name, category, image, price, currency_symbl, rating, availability , id} = item;
 
-    const existingBasket = JSON.parse(localStorage.getItem("basketList")) || [];
+  const statusFav = isInWishlist(id); 
+  const handleAddToBasket = () => addToCart(id);
+  const handleAddToFav = () => addToWishlist(id);
+  const handleRemoveFav = () => removeFromWishlist(id);
 
-    const existingItemIndex = existingBasket.findIndex(basketItem => basketItem.id === id);
-
-    if (existingItemIndex !== -1) {
-        existingBasket[existingItemIndex].quantity = (existingBasket[existingItemIndex].quantity || 1) + 1
-    } else {
-        existingBasket.push({
-          ...item,
-          quantity: 1
-        })
-    };
-
-    localStorage.setItem("basketList", JSON.stringify(existingBasket));
-
-    window.dispatchEvent(new Event("basketUpdated"));
-
-    toast.success(`${brand} added to Basket ! :)`)
-    
-  };
-
-
-  const handleAddToFav = () => {
-    setStatusFav(!statusFav);
-
-    const existingFavList = JSON.parse(localStorage.getItem("favList")) || [];
-
-    const existingFavIndex = existingFavList.findIndex(favItem => favItem.id === id);
-
-    if (existingFavIndex !== -1) {
-      existingFavList[existingFavIndex].quantity = (existingFavList[existingFavIndex].quantity || 1) + 1
-    }else{
-      existingFavList.push({
-        ...item,
-        quantity: 1
-      })
-    };
-
-    localStorage.setItem("favList", JSON.stringify(existingFavList));
-
-    window.dispatchEvent(new Event("favListUpdated"));  
-
-    toast.success(`${brand} added to WishList ! :)`)
-
-  };
-
-  const handleRemoveFav = () => {
-    setStatusFav(false);
-  };
+ 
 
   
     return (

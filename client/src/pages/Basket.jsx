@@ -1,108 +1,32 @@
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaBoxOpen } from "react-icons/fa";
 import { GoArrowUpRight } from "react-icons/go";
 import { IoIosArrowRoundForward } from "react-icons/io";
 import { PiHeartStraight, PiTrash } from "react-icons/pi";
+import { useNavigate } from "react-router-dom";
+import { useShop } from "../context/ShopContext";  
 
 function Basket() {
-  const [basketElement, setBasketElement] = useState([]);
-
-  // Məlumatların Local Storage dən oxunması
-
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("basketList")) || [];
-    setBasketElement(data);
-  }, []);
-
-  // Local Storage in yenilənməsi
-
-  const updatedLocalStorage = (newBasket) => {
-    localStorage.setItem("basketList", JSON.stringify(newBasket)) || [];
-    setBasketElement(newBasket);
-
-    window.dispatchEvent(new Event("basketUpdated"));
-  };
-
-  // Məhsulun silinməsi
-
-  const handleRemoveBasket = (id) => {
-    const updatedBasket = basketElement.filter((item) => item.id !== id);
-    updatedLocalStorage(updatedBasket);
-
-    toast.error(`Product deleted !`)
-  };
-
-  // Məhsulun sayın artırılması
-
-  const handleIncrease = (id) => {
-    const updatedBasket = basketElement.map((item) =>
-      item.id === id ? { ...item, quantity: (item.quantity || 1) + 1 } : item
-    );
-
-    updatedLocalStorage(updatedBasket);
-  };
-
-  // Məhsulun Sayın azaldılması
-
-  const handleDecrease = (id) => {
-    const updatedBasket = basketElement.map((item) =>
-      item.id === id && (item.quantity || 1) > 1
-        ? { ...item, quantity: (item.quantity || 1) - 1 }
-        : item
-    );
-
-    updatedLocalStorage(updatedBasket);
-  };
-
-  // Total ın hesablanması
-
-  const calculateTotal = () => {
-    return basketElement
-      .reduce((total, item) => {
-        const quantity = item.quantity || 1;
-        return total + item.price * quantity;
-      }, 0)
-      .toFixed(2);
-  };
-
-  // Ümumi İtem Total ın hesablanması
-
-  const getTotalItems = () => {
-    return basketElement.reduce((total, item) => {
-      return total + (item.quantity || 1);
-    }, 0);
-  };
-
-
-  // Add Favoruite Funskiyası 
-
-  const handleAddFav = (id) => {
+  const navigate = useNavigate();
+  const { cart, setCartQuantity, removeFromCart, addToWishlist, checkout, cartCount } = useShop();
+  const basketElement = cart.items;
   
-    const existingFav = JSON.parse(localStorage.getItem("favList")) || [];
+  const handleIncrease = (item) => setCartQuantity(item.productId, item.quantity + 1);
+  const handleDecrease = (item) => setCartQuantity(item.productId, item.quantity - 1);
+  const handleRemoveBasket = (productId) => removeFromCart(productId);
+  const handleAddFav = (productId) => addToWishlist(productId);
 
-    const product = basketElement.find(item => item.id === id);
+  const calculateTotal = () => cart.total.toFixed(2);
+  const getTotalItems = () => cartCount;
 
-    if(!product) return 
-
-    const existingItemIndex = existingFav.findIndex(favItem => favItem.id === id);
-
-    if(existingItemIndex !== -1) {
-      existingFav[existingItemIndex].quantity = (existingFav[existingItemIndex].quantity || 1) + 1
-    }else {
-      existingFav.push({
-        ...product,
-        quantity: 1
-      })
+  const handleCheckout = async () => {
+    if (basketElement.length === 0) return;
+    const order = await checkout();
+    if (order) {
+      toast.success(`Order #${order.id} placed!`);
+      navigate("/userDashboard");
     };
-
-    localStorage.setItem("favList" , JSON.stringify(existingFav));
-
-    window.dispatchEvent(new Event("favListUpdated"));
-
-    toast.success("Added WishList !")
-  
-  };
+};
 
   return (
     <>
@@ -133,10 +57,10 @@ function Basket() {
                 </div>
               </div>
             ) : (
-              basketElement.map((item, i) => (
+              basketElement.map((item) => (
                 <div
                   className="p-10 dark:bg-gray-800 dark:text-[#01b4bc]"
-                  key={i}
+                  key={item.productId}
                 >
                   <div>
                     <hr className="border-neutral-300" />
@@ -156,17 +80,17 @@ function Basket() {
                           {item.name}
                         </p>
                         <p className="text-green-500 font-semibold">
-                          {item.availability}
+                          {item.stock > 0 ? "In stock" : "Out of stock"}
                         </p>
                         <div className="py-5 flex gap-5">
                           <div className="cursor-pointer hover:text-violet-700">
                             <PiTrash
-                              onClick={() => handleRemoveBasket(item.id)}
+                              onClick={() => handleRemoveBasket(item.productId)}
                               size={25}
                             />
                           </div>
                           <div className="flex gap-1 cursor-pointer hover:text-violet-700">
-                            <PiHeartStraight onClick={() => handleAddFav(item.id)} size={25} />
+                            <PiHeartStraight onClick={() => handleAddFav(item.productId)} size={25} />
                             <p>Move</p>
                           </div>
                         </div>
@@ -174,23 +98,23 @@ function Basket() {
                           <div className="text-end">
                             <p className="font-bold">
                               <span className="font-semibold">
-                                Price : {item.price * item.quantity || 1}
+                                Price : {item.lineTotal}
                               </span>
-                              {item.currency_symbl}
+                              $
                             </p>
                           </div>
                           <div className="flex gap-2 justify-end py-5 items-center">
                             <button
-                              onClick={() => handleIncrease(item.id)}
+                              onClick={() => handleIncrease(item)}
                               className="px-3 py-2 bg-violet-600 rounded dark:bg-gray-900 dark:hover:bg-[#01b4bc] dark:hover:text-gray-900 cursor-pointer text-white font-bold"
                             >
                               +
                             </button>
                             <p className="font-semibold">
-                              {item.quantity || 1}
+                              {item.quantity}
                             </p>
                             <button
-                              onClick={() => handleDecrease(item.id)}
+                              onClick={() => handleDecrease(item)}
                               className="px-3 py-2 bg-violet-600 rounded cursor-pointer dark:bg-gray-900 dark:hover:bg-[#01b4bc] dark:hover:text-gray-900 text-white font-bold"
                               disabled={item.quantity <= 1}
                             >
@@ -206,7 +130,7 @@ function Basket() {
             )}
           </div>
 
-          <div className="bg-[#f3f3f3] h-50 flex flex-col gap-6 mt-20 dark:bg-gray-800 rounded w-[500px] p-6">
+          <div className="bg-[#f3f3f3]  flex flex-col gap-6 mt-20 dark:bg-gray-800 rounded w-[500px] p-6">
             <h4 className="font-bold text-center text-[2rem]">Total</h4>
 
             {/* BURADA TOTAL GÖSTƏRİLİR */}
@@ -234,7 +158,7 @@ function Basket() {
               The prices shown exclude VAT
             </p>
             <div>
-              <button className="uppercase flex items-center justify-center bg-black dark:bg-gray-900  dark:hover:bg-[#01b4bc] dark:hover:text-gray-900 dark:text-white text-white p-2 m-auto w-[50%] rounded-full cursor-pointer hover:bg-[#7f01f3] transition-all duration-500 font-bold">
+              <button onClick={handleCheckout} className="uppercase flex items-center justify-center bg-black dark:bg-gray-900  dark:hover:bg-[#01b4bc] dark:hover:text-gray-900 dark:text-white text-white p-2 m-auto w-[50%] rounded-full cursor-pointer hover:bg-[#7f01f3] transition-all duration-500 font-bold">
                 <p>to checkout</p>
                 <IoIosArrowRoundForward size={30} />
               </button>

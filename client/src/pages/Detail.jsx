@@ -1,3 +1,4 @@
+import { useShop } from "../context/ShopContext";
 import { useParams } from "react-router"
 import Error from "./Error";
 import { IoIosStarHalf, IoMdStar } from "react-icons/io";
@@ -15,6 +16,7 @@ import Loader from "../components/Loader";
 function Detail() {
 
     const {products} = useThomman();
+    const { addToCart } = useShop();
     const { id: routeId } = useParams();
     const [counter , setCounter] = useState(1);
     const [thumb , setThumb] = useState(false);
@@ -62,49 +64,9 @@ function Detail() {
         return <Error />
     };    
     
-      function addBasket(id) {
-
-            try {
-            let basketArr = [];
-
-            const savedBasket = localStorage.getItem("basketList");
-
-
-            if (savedBasket) {
-                const parsed = JSON.parse(savedBasket);
-                basketArr = Array.isArray(parsed) ? parsed : []
-            };
-
-            const basketElement = products.find(item => item.id === id);
-
-            if (!basketElement) {
-                console.error("Product Not Found!");
-                return
-            };
-
-            const existingItemIndex = basketArr.findIndex(basketItem => basketItem.id === id);
-
-            if (existingItemIndex > -1) {
-                basketArr[existingItemIndex].quantity = basketArr[existingItemIndex].quantity ?
-                basketArr[existingItemIndex].quantity + 1 : 2
-            }else {
-                const newItem = {
-                ...basketElement ,
-                quantity: 1,
-                addedAt: new Date().toISOString()
-                }
-                basketArr.push(newItem)
-            };
-
-            localStorage.setItem("basketList" , JSON.stringify(basketArr));
-
-            window.dispatchEvent(new CustomEvent("basketUpdated"))
-            
-            } catch (error) {
-            console.error("Error adding to cart!" , error);
-            }
-    
-  };
+    function addBasket(id) {
+        addToCart(id, Math.max(1 , counter));
+    };
 
     return (
         <>
