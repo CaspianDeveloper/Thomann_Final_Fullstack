@@ -28,13 +28,16 @@ docker compose exec api npm run seed               # creates the admin
 docker compose exec api npm run seed:products      # 18 categories, 92 products
 ```
 
-- API: http://localhost:3000
-- Swagger UI: http://localhost:3000/docs
+- API: http://localhost:3001
+- Swagger UI: http://localhost:3001/docs
 - Local admin (Docker defaults): `admin@example.com` / `change-this-admin-password`
 
 Stop with `docker compose down` (add `-v` only if you want to wipe the database).
 
 ## Run locally (without the API container)
+
+The local dev server uses http://localhost:3000; the Docker API container uses 
+http://localhost:3001, so both can run at the same time.
 
 ```bash
 docker compose up -d db  # PostgreSQL on localhost:5433
