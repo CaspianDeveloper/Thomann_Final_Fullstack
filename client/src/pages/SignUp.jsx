@@ -97,7 +97,7 @@ function SignUp() {
                 <select onChange={handleValues} className="rounded bg-white p-2  border-gray-400 outline-0 ring-0 dark:bg-gray-700 dark:text-[#01B4BC] dark:placeholder:text-[#01B4BC] dark:border-[#01B4BC]" type="text" name="country">
                     {
                       countries?.map((item , i) => 
-                        <option  key={i}>Select country</option>
+                        <option  key={i}>{item?.name}</option>
                     )
                     }
                 </select>

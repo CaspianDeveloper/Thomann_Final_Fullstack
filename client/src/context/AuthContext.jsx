@@ -15,7 +15,8 @@ function readStoredUser() {
             localStorage.removeItem("user");
             localStorage.removeItem("token");
             return null;
-        }
+        };
+        return user;
     } catch {
         return null
     };
@@ -33,10 +34,10 @@ function AuthContext({ children }) {
     };
 
     function logout() {
+        navigate("/Thomann");
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         setUser(null);
-        navigate("/Thomann");
     };
 
     const isAdmin = userJson?.role === "ADMIN";

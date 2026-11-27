@@ -65,7 +65,7 @@ export function PrivateRoute({ children }) {
     
     <> 
         {
-          userJson ? children : <Navigate to={"/register/sign-in"} />
+          userJson ? children : <Navigate to={"/Thomann"} />
         }  
     </>
     
