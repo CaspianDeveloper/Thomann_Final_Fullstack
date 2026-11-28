@@ -2,7 +2,6 @@ import { prisma } from "../lib/prisma";
 import { BadRequestError , ConflictError , NotFoundError } from "../lib/errors";
 import type { CreateOrderInput , ListOrdersQuery } from "../schemas/order.schema";
 import type { AdminListOrdersQuery } from "../schemas/order.schema";
-import { email } from "zod";
 
 type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
