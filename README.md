@@ -51,7 +51,7 @@ npm install
 npx prisma generate --config prisma7.config.ts
 npx prisma migrate deploy --config prisma7.config.ts
 npm run seed && npm run seed:products
-npm run dev
+npm start dev
 ```
 
 ## Frontend
