@@ -11,7 +11,10 @@ import thomannNewsLetter from "../assets/50x50-envelope-newsletter-contest-engli
 import { IoCheckmark } from "react-icons/io5";
 import FeedBackSlider from "./FeedBackSlider";
 import ProductsCard from "./ProductsCard";
-import {  useEffect, useState } from "react";
+import { useEffect , useRef, useState } from "react";
+import toast from "react-hot-toast";
+import Pagination from "./Pagination";
+import { getCategoryList, getProductsPage } from "../services/ProductServices";
 import { useParams } from "react-router";
 import {  useThomman } from "../context/DataContext";
 
@@ -22,10 +25,50 @@ function Main({ status , searchInpValue}) {
   const {products} = useThomman()
     
   const [feedbackStatus, setFeedBackSideBar] = useState(false);
-  const [visibleProducts , setVisibleProducts] = useState(12)
+  const LIMIT = 12;
+  const [pageData , setPageData] = useState(null);
+  const [page , setPage] = useState(1);
+  const [categories , setCategories] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading , setLoading] = useState(true);
+  const gridRef = useRef(null);
   const [showScrollButton , setShowScrollButton] = useState(false);
 
   const {category} = useParams();
+
+  useEffect(() => {
+    getCategoryList().then(setCategories).catch(() => {});
+  },[]);
+
+  // Hər hərfə sorğu getməsin deyə axtarış 400 ms gecikdirilir.
+  useEffect(() => {
+    const t = setTimeout(() => setSearch((searchInpValue ?? "").trim()),400);
+    return () => clearTimeout(t);
+  },[searchInpValue]);
+
+  // Kateqoriya və axtarış dəyişəndə 1-ci səhifəyə qayıt
+  useEffect(() => { setPage(1); }, [category, search]);
+
+  useEffect(() => {
+    const slug = category ? categories.find((c) => c.name === category)?.slug : undefined;
+    if (category && categories.length == 0) return; // kateqoriyalar hələ yüklənməyib
+    if (category && !slug) {
+      setPageData({ items: [], page: 1, totalPages: 1, total: 0 });
+      setLoading(false);
+      return;
+    };
+    let cancelled = false;
+    setLoading(true);
+    getProductsPage({ page, limit: LIMIT, search: search || undefined, category: slug })
+        .then((d) => { if (!cancelled) setPageData(d) })
+        .catch((e) => toast.error(e.message))
+        .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true };
+  }, [page, search, category, categories]);
+  function handlePageChange(p) {
+      setPage(p);
+      gridRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   
   useEffect(() => {
     const handleScroll = () => {
@@ -46,16 +89,7 @@ function Main({ status , searchInpValue}) {
         top: 0,
         behavior: "smooth"
       });
-  }
-
-  function handleShowMore() {
-    setVisibleProducts(prev => prev + 12)
-  };
-
-  function handleShowLess() {
-    setVisibleProducts(12)
-  };
-
+  }  
 
 
   return (
@@ -92,39 +126,17 @@ function Main({ status , searchInpValue}) {
              { 
             
               <>
-                  <h4 className="text-center text-[2rem] font-bold underline underline-offset-6 pt-20 lg:p-0 xl:p-0 decoration-[#7E00F3] dark:bg-gray-900 dark:text-[#01b4bc]">Products</h4>
-                  <div className="flex justify-center flex-wrap gap-5 py-5 dark:bg-gray-900 px-5">
-                    {
-                      products
-                      ?.filter(item => item.name.toLowerCase().includes(searchInpValue.toLowerCase()))
-                      ?.filter(item => !category || item.category === category)
-                      ?.slice(0 , visibleProducts)
-                      ?.map((item , i) => <ProductsCard key={i} item={item}  products={products}  />)
-                        
-                    }
+                  <h4 ref={gridRef} className="text-center text-[2rem] font-bold underline underline-offset-6 pt-20 lg:p-0 xl:p-0 decoration-[#7E00F3] dark:bg-gray-900 dark:text-[#01b4bc]">Products</h4>
+                  <div className={`flex justify-center flex-wrap gap-5 py-5 dark:bg-gray-900 px-5 min-h-60 transition-opacity ${loading ? "opacity-50" : ""}`}>
+                    { !pageData ? (
+                      <p className="py-10 text-2xl dark:text-[#01b4bc]">Loading...</p>
+                    ) : pageData.items.length === 0 ? (
+                      <p className="py-10 text-2xl dark:text-[#01b4bc]">No products found.</p>
+                    ) : (
+                      pageData.items.map((item) => <ProductsCard key={item.id} item={item} />)
+                    )}
                   </div>
-                  
-                  {
-                    products?.length > 12 && (
-                      <div className="text-center py-5 dark:bg-gray-900">
-
-                        { !status &&
-                          visibleProducts < products.length && (
-                          <button onClick={handleShowMore} className="bg-[#7e00f3] text-white font-bold px-8 py-3 rounded-full cursor-pointer hover:bg-[#470188] transition-all duration-300 dark:bg-gray-800 dark:hover:bg-[#01b4bc] dark:text-[#01b4bc] dark:hover:text-gray-800 mr-3 text-2xl">
-                            Show More ({products.length - visibleProducts}more)
-                          </button>
-                        )}
-                        { !status && 
-                          visibleProducts > 12 && (
-                          <button onClick={handleShowLess} className="bg-gray-600 text-white font-bold px-8 py-3 rounded-full cursor-pointer hover:bg-gray-700 transition-all duration-300 dark:bg-gray-800 dark:text-[#01b4bc] dark:hover:bg-gray-700 text-2xl">
-                            Show Less
-                          </button>
-                        )}
-
-                      </div>
-                    )
-                  }
-
+                    <Pagination page={pageData?.page ?? page} totalPages={pageData?.totalPages ?? 1} onChange={handlePageChange} />
              </>}
     {/* Products Maping Area  End */}
     {/* Product Highlights Section Start  */}

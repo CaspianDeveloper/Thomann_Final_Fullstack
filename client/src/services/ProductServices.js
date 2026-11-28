@@ -1,4 +1,5 @@
 import { api } from "../api/axiosInstance";
+import { getErrorMessage } from "./AuthServices";
 
 // Köhnə datada olan qısa başlıq (head_categ) yeni bazada saxlanılmır, Header üçün burada qalır.
 const HEAD_LABELS = {
@@ -78,3 +79,25 @@ export async function getAllProducts() {
     return all.map((p) => mapProduct(p, catImages));
 };
 
+export async function getCategoryList() {
+    const { data } = await api.get("/categories");
+    return Array.isArray(data) ? data : data.items ?? [];
+};
+
+// Serverdən bir səhifə məhsul (səhifələmə + axtarış + kateqoriya filtri)
+export async function getProductsPage({ page = 1 , limit = 12, search, category, sort}) {
+    try {
+        const { data } = await api.get("/products" , {
+            params: { page, limit, search, category, sort }
+        });
+
+        return {
+            items: data.items.map((p) => mapProduct(p)),
+            page: data.page,
+            totalPages: data.totalPages,
+            total: data.total
+        };
+    } catch (error) {
+        throw new Error(getErrorMessage(error, "Could not load products."));
+    }
+};
