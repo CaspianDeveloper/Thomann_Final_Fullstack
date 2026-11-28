@@ -18,6 +18,14 @@ import { getCategoryList, getProductsPage } from "../services/ProductServices";
 import { useParams } from "react-router";
 import {  useThomman } from "../context/DataContext";
 
+const SORT_OPTIONS = [
+  { value: "newest", label: "Newest" },
+  { value: "price_asc", label: "Price: low to high" },
+  { value: "price_desc", label: "Price: high to low" },
+  { value: "name_asc", label: "Name: A to Z" },
+  { value: "rating_desc", label: "Top created" }
+];
+
 
 
 function Main({ status , searchInpValue}) {
@@ -30,6 +38,7 @@ function Main({ status , searchInpValue}) {
   const [page , setPage] = useState(1);
   const [categories , setCategories] = useState([]);
   const [search, setSearch] = useState("");
+  const [sort , setSort] = useState("newest");
   const [loading , setLoading] = useState(true);
   const gridRef = useRef(null);
   const [showScrollButton , setShowScrollButton] = useState(false);
@@ -47,7 +56,7 @@ function Main({ status , searchInpValue}) {
   },[searchInpValue]);
 
   // Kateqoriya və axtarış dəyişəndə 1-ci səhifəyə qayıt
-  useEffect(() => { setPage(1); }, [category, search]);
+  useEffect(() => { setPage(1); }, [category, search, sort]);
 
   useEffect(() => {
     const slug = category ? categories.find((c) => c.name === category)?.slug : undefined;
@@ -59,12 +68,12 @@ function Main({ status , searchInpValue}) {
     };
     let cancelled = false;
     setLoading(true);
-    getProductsPage({ page, limit: LIMIT, search: search || undefined, category: slug })
+    getProductsPage({ page, limit: LIMIT, search: search || undefined, category: slug, sort })
         .then((d) => { if (!cancelled) setPageData(d) })
         .catch((e) => toast.error(e.message))
         .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true };
-  }, [page, search, category, categories]);
+  }, [page, search, category, categories, sort]);
   function handlePageChange(p) {
       setPage(p);
       gridRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -127,6 +136,23 @@ function Main({ status , searchInpValue}) {
             
               <>
                   <h4 ref={gridRef} className="text-center text-[2rem] font-bold underline underline-offset-6 pt-20 lg:p-0 xl:p-0 decoration-[#7E00F3] dark:bg-gray-900 dark:text-[#01b4bc]">Products</h4>
+                  <div className="flex flex-col gap-3 px-5 pt-5 sm:flex-row sm:items-center sm:justify-between dark:bg-gray-900 dar:text-[#01b4bc]">
+                    <p className="text-lg dark:text-[#01b4bc]">
+                      {pageData ? `${pageData.total} product${pageData.total === 1 ? "" : "s"}` : "Loading..."}
+                    </p>
+                    <label className="flex flex-col gap-1 text-base font-semibold sm:flex-row sm:items-center sm:gap-3 dark:text-[#01b4bc]">
+                      Sort by
+                      <select 
+                        value={sort}
+                        onChange={(e) => setSort(e.target.value)}
+                        className="w-full min-h-12 rounded-full border border-gray-300 bg-white px-5 py-2 text-lg font-normal text-gray-900 outline-0 focus:ring-2 focus:ring-[#7E00F3] sm:w-auto dark:border-[#01b4bc] dark:bg-gray-800 dark:text-[#01b4bc] dark:focus:ring-[#01b4bc]"
+                      >
+                        {SORT_OPTIONS.map((o) => (
+                          <option key={o.value} value={o.value}>{o.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
                   <div className={`flex justify-center flex-wrap gap-5 py-5 dark:bg-gray-900 px-5 min-h-60 transition-opacity ${loading ? "opacity-50" : ""}`}>
                     { !pageData ? (
                       <p className="py-10 text-2xl dark:text-[#01b4bc]">Loading...</p>
