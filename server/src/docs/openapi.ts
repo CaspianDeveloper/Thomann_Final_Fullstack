@@ -249,8 +249,9 @@ export const openapi: Json = {
                 tag: "Products",
                 summary: "List active products with pagination, filters and sorting",
                 parameters: [
-                    ...pageQuery,
+                    query("page" , { type: "integer" , minimum: 1, default: 1 }),
                     query("search" , { type: "string" }, "Match on product name"),
+                    query("limit" , { type: "integer" , minimum: 1, maximum: 50, default: 12}),
                     query("category", { type: "string" }, "Category slug"),
                     query("brand" , { type: "string" }),
                     query("minPrice" , { type: "number", minimum: 0 }),

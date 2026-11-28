@@ -3,7 +3,9 @@
 An online musical-instruments shop. React frontend + REST API (Express 5, TypeScript, PostgreSQL, Prisma 7).
 
 -**Live API:** https://thomann-final-fullstack.onrender.com, docs at [`/docs`](https://thomann-final-fullstack.onrender.com/docs)
--**Live frontend:** https://thomann-final-project-frontend.vercel.app/Thomann
+-**Live frontend:** https://thomann-final-fullstack.vercel.app
+
+- **Note:** the API runs on Render's free tier and sleeps after 15 minutes of inactivity, so the first request can take up to a minute.
 
 ## Features
 
