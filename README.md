@@ -12,7 +12,7 @@ An online musical-instruments shop. React frontend + REST API (Express 5, TypeSc
 - Register / login with JWT, roles `USER` and  `ADMIN`
 - Catalog with pagination, search, filters (category, brand,  price) and sorting
 - Cart, wishlist, orders (transactional checkout, stock never goes negative)
-- Admin: manage categories, products and order statuses
+- - Admin: API for categories, products and order statuses; the frontend admin panel covers products and orders
 - Zod validation on every endpoint, one error format, OpenAPI docs at `/docs`
 - 43 Vitest tests against a real PostgreSQL database
 
