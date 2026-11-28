@@ -2,19 +2,21 @@
 
 An online musical-instruments shop. React frontend + REST API (Express 5, TypeScript, PostgreSQL, Prisma 7).
 
--**Live API:** https://thomann-final-fullstack.onrender.com, docs at [`/docs`](https://thomann-final-fullstack.onrender.com/docs)
--**Live frontend:** https://thomann-final-fullstack.vercel.app
+- **Live frontend:** https://thomann-final-fullstack.vercel.app
+- **Live API:** https://thomann-final-fullstack.onrender.com, docs at [`/docs`](https://thomann-final-fullstack.onrender.com/docs)
 
-- **Note:** the API runs on Render's free tier and sleeps after 15 minutes of inactivity, so the first request can take up to a minute.
+
+> The API runs on Render's free tier nd sleeps after 15 minutes of inactivity, so the first request can take up to a minute.
 
 ## Features
 
 - Register / login with JWT, roles `USER` and  `ADMIN`
-- Catalog with pagination, search, filters (category, brand,  price) and sorting
-- Cart, wishlist, orders (transactional checkout, stock never goes negative)
-- - Admin: API for categories, products and order statuses; the frontend admin panel covers products and orders
-- Zod validation on every endpoint, one error format, OpenAPI docs at `/docs`
-- 43 Vitest tests against a real PostgreSQL database
+- Catalog with server-side pagination, search, filters (category, brand,  price) and sorting
+- Cart, wishlist and orders stored per user (transactional checkout, stock never goes negative), order history and cancellation.
+- - Admin: the API covers categories, products and order statuses; the frontend admin panel covers products and orders
+- Zod validation on every endpoint, one error format, OpenAPI docs at `/docs
+- Rate limiting on login and register , security headers (helmet)
+- More than 40 Vitest tests against a real PostgreSQL database
 
 ## Stack
 
@@ -32,7 +34,7 @@ docker compose exec api npm run seed:products      # 18 categories, 92 products
 
 - API: http://localhost:3001
 - Swagger UI: http://localhost:3001/docs
-- Local admin (Docker defaults): `admin@example.com` / `change-this-admin-password`
+- Live admin: ask the author for credentials (the admin is created by `npm run seed`).
 
 Stop with `docker compose down` (add `-v` only if you want to wipe the database).
 
@@ -52,7 +54,23 @@ npm run seed && npm run seed:products
 npm run dev
 ```
 
-## Enviroment variables (`server/.env`)
+## Frontend
+
+```bash
+cd client
+npm install
+npm run dev                 #http://localhost:5173
+
+Create `/client/.env.local`:
+
+```
+VITE_API_URL=http://localhost:3000
+VITE_BASE_URL=https://thomann-db.onrender.com
+```
+
+`VITE_API_URL` is this project's API. `VITE_BASE_URL` is the legacy JSON API that still serves static content (flag ,sliders,countries).
+
+## Environment variables (`server/.env`)
 
 | Name | Description |
 |--|--|
@@ -64,7 +82,7 @@ npm run dev
 
 ## Tests
 
-Tests run againist a seperate database `thomann_test`,
+Tests run againist a seperate database.
 
 ```bash
 docker compose exec db psql -U postgres -c "CREATE DATABASE thomann_test;" # once
@@ -115,7 +133,7 @@ server/
         routes/                 routes and middleware
         middleware/             auth, error handler
         docs/                   OpenAPI document
-      tests/                    Vitest + Supertest integration tests
+        tests/                    Vitest + Supertest integration tests
 docker-compose.yml              PostgreSQL + API
 ```
         
